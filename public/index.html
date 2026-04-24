@@ -5,49 +5,41 @@
 </head>
 <body style="text-align:center;font-family:sans-serif">
 
-    <h2>Cloud To-Do App</h2>
+<h2>Cloud To-Do App (GitHub Hosted)</h2>
 
-    <input id="task" placeholder="Enter task">
-    <button onclick="add()">Add</button>
+<input id="task" placeholder="Enter task">
+<button onclick="add()">Add</button>
 
-    <ul id="list"></ul>
+<ul id="list"></ul>
 
 <script>
-const API = "";
+let todos = JSON.parse(localStorage.getItem("todos")) || [];
 
-async function load() {
-    let res = await fetch(API + "/todos");
-    let data = await res.json();
+function save() {
+    localStorage.setItem("todos", JSON.stringify(todos));
+}
 
+function load() {
     let list = document.getElementById("list");
     list.innerHTML = "";
 
-    data.forEach(t => {
+    todos.forEach((t, i) => {
         let li = document.createElement("li");
-        li.innerHTML = t + " <button onclick=\"del('${t}')\">X</button>";
+        li.innerHTML = t + " <button onclick='del(" + i + ")'>X</button>";
         list.appendChild(li);
     });
 }
 
-async function add() {
-    let text = document.getElementById("task").value;
-
-    await fetch(API + "/add", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({text})
-    });
-
+function add() {
+    let task = document.getElementById("task").value;
+    todos.push(task);
+    save();
     load();
 }
 
-async function del(text) {
-    await fetch(API + "/delete", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({text})
-    });
-
+function del(i) {
+    todos.splice(i, 1);
+    save();
     load();
 }
 
