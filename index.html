@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cloud To-Do</title>
+</head>
+<body style="text-align:center;font-family:sans-serif">
+
+<h2>Cloud To-Do App (GitHub Hosted)</h2>
+
+<input id="task" placeholder="Enter task">
+<button onclick="add()">Add</button>
+
+<ul id="list"></ul>
+
+<script>
+let todos = JSON.parse(localStorage.getItem("todos")) || [];
+
+function save() {
+    localStorage.setItem("todos", JSON.stringify(todos));
+}
+
+function load() {
+    let list = document.getElementById("list");
+    list.innerHTML = "";
+
+    todos.forEach((t, i) => {
+        let li = document.createElement("li");
+        li.innerHTML = t + " <button onclick='del(" + i + ")'>X</button>";
+        list.appendChild(li);
+    });
+}
+
+function add() {
+    let task = document.getElementById("task").value;
+    todos.push(task);
+    save();
+    load();
+}
+
+function del(i) {
+    todos.splice(i, 1);
+    save();
+    load();
+}
+
+load();
+</script>
+
+</body>
+</html>
