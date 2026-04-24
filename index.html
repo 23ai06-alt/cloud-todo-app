@@ -1,16 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cloud To-Do</title>
+    <title>AI Cloud To-Do</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            background: white;
+            color: black;
+            width: 350px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        input {
+            padding: 10px;
+            width: 70%;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .add { background: #28a745; color: white; }
+        .delete { background: #dc3545; color: white; }
+        .done { background: #007bff; color: white; }
+        .clear { background: black; color: white; }
+
+        li {
+            list-style: none;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f1f1f1;
+            border-radius: 8px;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: gray;
+        }
+    </style>
 </head>
-<body style="text-align:center;font-family:sans-serif">
 
-<h2>Cloud To-Do App (GitHub Hosted)</h2>
+<body>
 
-<input id="task" placeholder="Enter task">
-<button onclick="add()">Add</button>
+<div class="container">
+    <h2>🤖 AI Cloud To-Do App</h2>
 
-<ul id="list"></ul>
+    <input id="task" placeholder="Enter task">
+    <button class="add" onclick="add()">Add</button>
+
+    <ul id="list"></ul>
+
+    <button class="clear" onclick="clearAll()">Clear All</button>
+</div>
 
 <script>
 let todos = JSON.parse(localStorage.getItem("todos")) || [];
@@ -25,20 +81,49 @@ function load() {
 
     todos.forEach((t, i) => {
         let li = document.createElement("li");
-        li.innerHTML = t + " <button onclick='del(" + i + ")'>X</button>";
+
+        li.innerHTML = `
+            <span class="${t.done ? 'completed' : ''}">
+                ${t.text} <br><small>${t.time}</small>
+            </span>
+            <br>
+            <button class="done" onclick="toggle(${i})">✔</button>
+            <button class="delete" onclick="del(${i})">❌</button>
+        `;
+
         list.appendChild(li);
     });
 }
 
 function add() {
     let task = document.getElementById("task").value;
-    todos.push(task);
+
+    if(task.trim() === "") return;
+
+    let time = new Date().toLocaleString();
+
+    todos.push({ text: task, done: false, time: time });
+
     save();
     load();
+
+    document.getElementById("task").value = "";
 }
 
 function del(i) {
     todos.splice(i, 1);
+    save();
+    load();
+}
+
+function toggle(i) {
+    todos[i].done = !todos[i].done;
+    save();
+    load();
+}
+
+function clearAll() {
+    todos = [];
     save();
     load();
 }
